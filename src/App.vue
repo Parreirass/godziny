@@ -31,7 +31,7 @@
             <span>Atividade</span>
           </RouterLink>
         </li>
-        <li  :class="['sidebar-item', { 'active-parent': isActiveParent }]">
+        <li  :class="['sidebar-item', { 'active-parent': isActiveParent }]" v-if="auth.loginGeral.data.usuario.tipo !== 'NORMAL'">
           <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
             aria-expanded="false" aria-controls="auth">
             <i class="lni lni-protection"></i>
@@ -41,10 +41,10 @@
             <li class="sidebar-item">
                 <RouterLink to="/categorias" class="sidebar-link" active-class="active-link">Categorias</RouterLink>
             </li>
-            <li class="sidebar-item" v-if="auth.loginGeral.data.usuario.tipo !== 'NORMAL'">
+            <li class="sidebar-item" >
               <RouterLink to="/usuarios" class="sidebar-link" active-class="active-link">Usuários</RouterLink>
             </li>
-            <li class="sidebar-item" v-if="auth.loginGeral.data.usuario.tipo !== 'NORMAL'">
+            <li class="sidebar-item" >
               <RouterLink to="/cursos" class="sidebar-link" active-class="active-link">Cursos</RouterLink>
             </li>
           </ul>

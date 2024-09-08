@@ -17,13 +17,17 @@
               <input type="text" id="sigla" v-model="tituloAtividade" class="form-control" required>
             </div>
             <div class="mb-3">
-              <label for="nome" class="form-label">Categoria da Atividade </label>
-              <select class="form-select form-select" aria-label="Small select example" v-model="categoriaAtividade">
+              <label for="nome" class="form-label">Categoria da Atividade</label>
+              <select class="form-select" v-model="categoriaAtividade" aria-label="Small select example">
+                <!-- Opção inicial estática "Selecionar" -->
                 <option selected disabled>Selecionar</option>
-                <option value="022fe391-a1d7-4766-846b-6701e2843907">categorias</option>
-                <option value="2">.</option>
-                <option value="3">.</option>
+
+                <!-- Iteração sobre categorias para criar as opções -->
+                <option v-for="(categoria, index) in categorias" :key="index" :value="categoria.id">
+                  {{ categoria.nome }}
+                </option>
               </select>
+              
             </div>
             <div class="mb-3">
               <label for="formFile" class="form-label">Escolher arquivo</label>
@@ -38,10 +42,10 @@
 </template>
 
 <script setup>
-import { ref, defineEmits} from 'vue';
+import { ref, defineEmits, onMounted } from 'vue';
 import { Modal } from 'bootstrap';
-// import auth from '../lib/autentication';
-// import axios from "axios";
+import auth from '../lib/autentication';
+import axios from "axios";
 
 
 const tituloAtividade = ref('');
@@ -50,6 +54,30 @@ const file = ref(null);
 const cargaHoraria = ref(null);
 const statusAtividade = ref('SIMULANDO');
 const comentario = ref(null);
+const categorias = ref([]);
+
+onMounted(async () => {
+  try {
+    const updateDTO = {
+      "cursoSigla": null,
+      "nome": null
+    };
+
+
+    const response = await axios.post(
+      `http://localhost:8080/categoria/pesquisar`,
+      updateDTO,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.loginGeral.data.token}`,
+        },
+      }
+    );
+    categorias.value = response.data.content;
+  } catch (error) {
+    console.error("Erro ao pesquisar categoria", error);
+  }
+});
 
 
 /* defineEmits é usado para definir um evento customizado chamado atividade-adicionada. Este evento será
@@ -68,9 +96,9 @@ const adicionarAtividade = async () => {
  
   const atividadeDto = {
       id: "",
-      usuarioId: 2,
-      categoriaId: "c3d1e9b4-9c2e-4b6e-91f8-a5d6f2a1c3b4",
-      titulo: "cheba",
+      usuarioId: auth.loginGeral.data.usuario.matricula,
+      categoriaId: categoriaAtividade.value,
+      titulo: tituloAtividade.value,
       createdAt: new Date().toISOString(),
       status: "SIMULANDO",
       arquivoId: "",
